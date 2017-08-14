@@ -14,7 +14,7 @@ footer = '\n*---This explanation was extracted from [explainxkcd](http://www.exp
 
 def authenticate():
     print("Authenticating...\n")
-    reddit = praw.Reddit("explainbot", user_agent='web:xkcd-explain-bot:v0.1 ')
+    reddit = praw.Reddit("BookInfoBot", user_agent='web:bookinfobot v0.1 ')
     print('Authenticated as {}\n'.format(reddit.user.me()))
     return reddit
 
@@ -22,7 +22,7 @@ def fetchdata(url):
     r = requests.get(url)
     soup = BeautifulSoup(r.content, 'html.parser')
 
-    tag = soup.find('p')
+    tag = soup.find(id="description")
     data = ''
     while True:
         if isinstance(tag, bs4.element.Tag):
