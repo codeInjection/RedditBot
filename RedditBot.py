@@ -22,20 +22,13 @@ def fetchdata(url):
     r = requests.get(url)
     soup = BeautifulSoup(r.content, 'html.parser')
 
-    tag = soup.find(id="description")
-    data = ''
-    while True:
-        if isinstance(tag, bs4.element.Tag):
-            if tag.name == 'h2':
-                break
-            if tag.name == 'h3':
-                tag = tag.nextSibling
-            else:
-                data = data + '\n' + tag.text
-                tag = tag.nextSibling
-        else:
-            tag = tag.nextSibling
-    return data
+    book_details = soup.find(id="description")
+    book_details = book_details.span.next_sibling.next_sibling.contents
+
+    num_pages = soup.find(id="details")
+    num_pages = num_pages.div.span.next_sibling.next_sibling.contents
+    #data = ''
+    return (book_details, num_pages)
 
 def run_explainbot(reddit):
     
