@@ -30,18 +30,18 @@ def fetchdata(url):
     #data = ''
     return (book_details, num_pages)
 
-def run_explainbot(reddit):
+def run_bookbot(reddit):
     
     print("Getting 250 comments...\n")
     
     for comment in reddit.subreddit('test').comments(limit = 250):
-        match = re.findall("[a-z]*[A-Z]*[0-9]*https://www.xkcd.com/[0-9]+", comment.body)
+        match = re.findall("!book", comment.body)
         if match:
             print("Link found in comment with comment ID: " + comment.id)
-            xkcd_url = match[0]
-            url_obj = urlparse(xkcd_url)
-            xkcd_id = int((url_obj.path.strip("/")))
-            myurl = 'http://www.explainxkcd.com/wiki/index.php/' + str(xkcd_id)
+            #goodreads_url = match[0]
+            #url_obj = urlparse(goodreads_url)
+            #xkcd_id = int((url_obj.path.strip("/")))
+            goodreads_url = 'https://www.goodreads.com/search?q=' + str(xkcd_id)
             
             file_obj_r = open(path,'r')
                         
@@ -68,6 +68,17 @@ def run_explainbot(reddit):
     print('Waiting 60 seconds...\n')
     time.sleep(60)
 
+def extract_bookURL(text, key):
+    print("Some text is", text)
+    book_name = text[text.index(key)+ len(key)+1:]
+    print("book name is", book_name)
+    goodreads_search = 'https://www.goodreads.com/search?q=' + book_name
+    print("URL is", goodreads_search)
+    r = requests.get(goodreads_search)
+    soup = BeautifulSoup(r.content, "html.parser")
+    first_book_url = soup.find("a", class_="bookTitle")['href']
+    book_url = "https://www.goodreads.com" + first_book_url
+    
 def main():
     reddit = authenticate()
     while True:
