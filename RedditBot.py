@@ -30,26 +30,22 @@ def fetchdata(url):
     #data = ''
     return (book_details, num_pages)
 
-def run_bookbot(reddit):
-    
+def run_bookbot():
+    key = "!book"
     print("Getting 250 comments...\n")
-    
+    someComment = "Hi, I liked you thing a lot, so good, thanks. Check out my book checker. !book The Stand"
     for comment in reddit.subreddit('test').comments(limit = 250):
         match = re.findall("!book", comment.body)
-        if match:
-            print("Link found in comment with comment ID: " + comment.id)
-            #goodreads_url = match[0]
-            #url_obj = urlparse(goodreads_url)
-            #xkcd_id = int((url_obj.path.strip("/")))
-            goodreads_url = 'https://www.goodreads.com/search?q=' + str(xkcd_id)
-            
-            file_obj_r = open(path,'r')
-                        
+        
+        if key in comment.body:
+            #print("Link found in comment with comment ID: " + comment.id)
+            text = comment.body
+            book_url = extract_bookURL(text, key)
             try:
-                explanation = fetchdata(myurl)
+                description = fetchdata(book_url)[0]
+                num_pages = fetchdata(book_url)[1]
             except:
-                print('Exception!!! Possibly incorrect xkcd URL...\n')
-                # Typical cause for this will be a URL for an xkcd that does not exist (Example: https://www.xkcd.com/772524318/)
+                print("Possibly Incorrect book name or color")
             else:
                 if comment.id not in file_obj_r.read().splitlines():
                     print('Link is unique...posting explanation\n')
@@ -78,6 +74,8 @@ def extract_bookURL(text, key):
     soup = BeautifulSoup(r.content, "html.parser")
     first_book_url = soup.find("a", class_="bookTitle")['href']
     book_url = "https://www.goodreads.com" + first_book_url
+
+    return book_url
     
 def main():
     reddit = authenticate()
